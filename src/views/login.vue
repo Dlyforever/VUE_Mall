@@ -29,21 +29,18 @@ export default {
     }
   },
   methods: {
-    handleLogin () {
-      this.$http
-        .post('login', this.formData)
-        .then((res) => {
-          const data = res.data
-          const { meta: { status, msg } } = data
-          if (status === 200) {
-            // 登陆成功 记录token
-            const token = data.data.token
-            sessionStorage.setItem('token', token)
-            this.$message.success(msg)
-          } else {
-            this.$message.error(msg)
-          }
-        })
+    // es7 规范的ajax 请求
+    async handleLogin () {
+      const res = this.$http.post('login', this.formData)
+      const data = res.data
+      const { meta: { status, msg } } = data
+      if (status === 2000) {
+        this.$message.cuccess(msg)
+        const { data: { token } } = data
+        sessionStorage.setItem('token', token)
+      } else {
+        this.$message.error(msg)
+      }
     }
   }
 }
