@@ -31,7 +31,7 @@ export default {
   methods: {
     // es7 规范的ajax 请求
     async handleLogin () {
-      const res = this.$http.post('login', this.formData)
+      const res = await this.$http.post('login', this.formData)
       const data = res.data
       const { meta: { status, msg } } = data
       if (status === 2000) {
