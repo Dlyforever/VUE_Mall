@@ -34,10 +34,12 @@ export default {
       const res = await this.$http.post('login', this.formData)
       const data = res.data
       const { meta: { status, msg } } = data
-      if (status === 2000) {
-        this.$message.cuccess(msg)
+      if (status === 200) {
+        this.$message.success(msg)
         const { data: { token } } = data
         sessionStorage.setItem('token', token)
+        // 跳转到主页
+        this.$router.push({ name: 'home' })
       } else {
         this.$message.error(msg)
       }
