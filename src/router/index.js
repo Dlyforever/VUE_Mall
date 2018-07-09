@@ -3,6 +3,9 @@ import Router from 'vue-router'
 // 引入组件
 import Login from '@/views/login'
 import Home from '@/views/home'
+import Users from '@/views/users/users'
+import Roles from '@/views/rights/roles'
+import Rights from '@/views/rights/rights'
 
 Vue.use(Router)
 // 设计路由
@@ -17,7 +20,37 @@ export default new Router({
     {
       name: 'home',
       path: '/',
-      component: Home
+      component: Home,
+      // 子路由 将来子路由的切换是在home组件中完成的
+      // 子路由使用之前 home组件已创建完成
+      children: [
+        {
+          name: 'users',
+          path: '/users',
+          component: Users
+        },
+        {
+          name: 'roles',
+          path: '/roles',
+          component: Roles
+        },
+        {
+          name: 'rights',
+          path: '/rights',
+          component: Rights
+        }
+        // {
+        //   name: 'users',
+        //   path: '/users',
+        //   component: Users
+        // },
+        // {
+        //   name: 'users',
+        //   path: '/users',
+        //   component: Users
+        // },
+      ]
+
     }
   ]
 })
