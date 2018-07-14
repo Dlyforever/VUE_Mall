@@ -1,0 +1,161 @@
+<el-card class="box-card">
+    <!-- 面包屑 -->
+    <el-breadcrumb separator-class="el-icon-arrow-right">
+      <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item>用户管理</el-breadcrumb-item>
+      <el-breadcrumb-item>用户列表</el-breadcrumb-item>
+    </el-breadcrumb>
+
+    <!-- 搜索区域 -->
+    <el-row class = "searchArea">
+      <el-col :span = "24">
+        <el-input v-model = "searchValue" class = "searchInput" clearable placeholder="请输入内容">
+          <el-button @click = "handleSearch" slot="append" icon="el-icon-search"></el-button>
+        </el-input>
+        <el-button class = "addUser" @click = "addUserDialogVisible = true" type="success" plain>添加用户</el-button>
+      </el-col>
+    </el-row>
+
+    <!-- 表格 -->
+    <!-- 组件内部自动循环渲染 -->
+    <el-table
+      v-loading="loading"
+      stripe
+      border
+      :data="list"
+      style="width: 100%">
+      <el-table-column
+        type="index"
+        width="50">
+      </el-table-column>
+      <el-table-column
+        prop="username"
+        label="姓名"
+        width="100">
+      </el-table-column>
+      <el-table-column
+        prop="email"
+        label="邮箱"
+        width="200">
+      </el-table-column>
+      <el-table-column
+        prop="mobile"
+        label="电话">
+      </el-table-column>
+      <el-table-column
+        prop="create_time"
+        label="创建日期">
+        <!-- scope.row 是当前绑定的数据对象 -->
+        <template slot-scope="scope">
+          {{ scope.row.create_time | fmtDate('YYYY-MM-DD') }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="用户状态" width = "100">
+        <template slot-scope = "scope">
+          <!-- scope.row就是当前绑定的数据对象 -->
+          <el-switch
+          @change = "handleSwitchChange(scope.row)"
+          v-model="scope.row.mg_state"
+          active-color="#13ce66"
+          inactive-color="#ff4949">
+          </el-switch>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="操作">
+        <template slot-scope = "scope" width = "200">
+          <el-button plain @click="handleShowEditDialog(scope.row)" size = "mini" type="primary" icon="el-icon-edit" ></el-button>
+          <el-button plain @click = "handleDelete(scope.row.id)" size = "mini" type="danger" icon="el-icon-delete"></el-button>
+          <el-button plain @click ="handleShowSetRoleDialog(scope.row)" size = "mini" type="success" icon="el-icon-check"></el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <!-- 分页部分 -->
+      <el-pagination
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="pagenum"
+      :page-sizes="[2, 4, 6]"
+      :page-size="pagesize"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total">
+    </el-pagination>
+
+    <!-- 添加用户对话框 -->
+    <el-dialog title="添加用户" @closed = 'handleClosed' :visible.sync="addUserDialogVisible">
+      <el-form :model="formData"
+        ref = "myform"
+        :rules = "formRules"
+        label-width="100px">
+        <el-form-item prop = "username" label="用户名" >
+          <el-input  type="text" v-model="formData.username" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item prop = "password" label="密码" >
+          <el-input type="password" v-model="formData.password" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item prop = "eamil" label="邮箱" >
+          <el-input v-model="formData.eamil" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item prop = "mobile" label="电话" >
+          <el-input v-model="formData.mobile" auto-complete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="addUserDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleAdd()">确 定</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 编辑用户 -->
+    <el-dialog title="编辑用户" @closed ="handleClosed" :visible.sync="editUserDialogVisible">
+      <el-form :model="formData"
+        ref = "myform"
+        :rules = "formRules"
+        label-width="100px">
+        <el-form-item  prop = "username" label="用户名" >
+          <el-input disabled type="text" v-model="formData.username" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item prop = "password" label="密码" >
+          <el-input type="password" v-model="formData.password" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item prop = "eamil" label="邮箱" >
+          <el-input v-model="formData.eamil" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item prop = "mobile" label="电话" >
+          <el-input v-model="formData.mobile" auto-complete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="editUserDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click = "handleEdit">确 定</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 分配角色 -->
+    <el-dialog title="分配角色" @closed ="handleClosed" :visible.sync="setRoleDialogVisible">
+      <el-form :model="formData"
+        label-width="100px">
+        <el-form-item  prop = "username" label="用户名" >
+          {{ currentUserName }}
+        </el-form-item>
+        <el-form-item label="角色">
+          <el-select v-model = "currentRoleId" >
+            <el-option disabled label = "请选择" :value = '-1'>
+            </el-option>
+            <el-option
+              v-for = 'item in roles'
+              :key = 'item.id'
+              :label = 'item.roleName'
+              :value = 'item.id'>
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="setRoleDialogVisible = false">取 消</el-button>
+        <el-button  type="primary"@click = "handleSetRole">确 定</el-button>
+      </div>
+    </el-dialog>
+  </el-card>

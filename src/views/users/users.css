@@ -1,0 +1,13 @@
+.box-card {
+  height: 100%;
+}
+.searchArea {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.searchInput {
+  width: 350px;
+}
+.addUser {
+  vertical-align: bottom;
+}
