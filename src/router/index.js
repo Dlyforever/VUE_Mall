@@ -3,14 +3,15 @@ import Router from 'vue-router'
 // 引入组件
 import Login from '@/views/login'
 import Home from '@/views/home'
-import Users from '@/views/users/users'
-import Roles from '@/views/rights/roles'
-import Rights from '@/views/rights/rights'
+import Users from '@/views/users/users.vue'
+import Roles from '@/views/roles/roles'
+import Rights from '@/views/roles/rights'
 
 Vue.use(Router)
 // 设计路由
 // 配置标识相对应的组件
 export default new Router({
+  mode: 'history',
   routes: [
     {
       name: 'login',

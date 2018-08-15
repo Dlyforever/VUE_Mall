@@ -196,12 +196,12 @@ export default {
     },
     async handleSetRole () {
       const res = await this.$http.put(`users/${this.currentUserId}/role`,
-      { 
-        rid: this.currentRoleId
-      })
+        {
+          rid: this.currentRoleId
+        })
       const data = res.data
       const { meta: { status, msg } } = data
-      if (status ===200) {
+      if (status === 200) {
         // 成功
         // 隐藏对话框
         this.setRoleDialogVisible = false
@@ -215,7 +215,6 @@ export default {
         // 失败
         this.$message.error(msg)
       }
-
     }
   }
 }
